@@ -33,6 +33,14 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+app.get("/register", (req, res) => {
+  res.render("registration");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.set("view engine", "ejs");
 //app.set('views', path.join(__dirname, 'views'));
 
