@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 // Given userId string, Url db object, returns an object with url object entries
 const getUrlsByUserId = function(userId, urlDb) {
   let resultObj = {};
@@ -27,11 +29,8 @@ const generateRandomString = function() {
 // Given an email string, iterates through users object and returns the user
 // Returns false if no email match
 const getUserByEmail = function(inputEmail, users) {
-  console.log("getUserByEmail", inputEmail);
   for (let user in users) {
-    console.log("=for", users[user]);
     if (users[user].email === inputEmail) {
-      console.log("=======");
       return user;
     }
   }
@@ -48,9 +47,50 @@ const templateVarMaker = function(userId, urlDatabase, users) {
   };
 };
 
+//Given user email, pass, and user db, returns true if user exists
+const isLoginValid = function(userEmail, userPass, users) {
+  let result = "";
+
+  for (let user in users) {
+    if (
+      users[user].email === userEmail &&
+      bcrypt.compareSync(userPass, users[user].password)
+    ) {
+      result = users[user].id;
+    }
+  }
+  return result;
+};
+
+const isRegistrationValid = function(body, users) {
+  const failedToRegisterMessage = "Registration failed, account exists";
+  const emptyUsernameOrPassMessage =
+    "Cannot register with empty username or password";
+
+  if (!body || !body.email || !body.password) {
+    return emptyUsernameOrPassMessage;
+  }
+
+  if (getUserByEmail(body.email, users)) {
+    return failedToRegisterMessage;
+  }
+};
+
+const handleLogout = function(req, res) {
+  res.clearCookie("session");
+  res.clearCookie("session.user_id");
+  res.clearCookie("session.visitor_id");
+  res.clearCookie("session.sig");
+  req.session = null;
+  res.redirect("/login");
+};
+
 module.exports = {
   getUrlsByUserId,
   generateRandomString,
   getUserByEmail,
-  templateVarMaker
+  templateVarMaker,
+  isLoginValid,
+  isRegistrationValid,
+  handleLogout
 };
