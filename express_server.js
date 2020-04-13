@@ -54,12 +54,14 @@ const defaultTemplate = {
 };
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longURL;
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+
+  console.log("/u/", longURL);
 
   if (longURL) {
-    res.redirect(200, longURL);
+    res.redirect(longURL);
   } else {
-    res.redirect(200, "/urls");
+    res.redirect("/urls");
   }
 });
 
