@@ -54,9 +54,9 @@ const defaultTemplate = {
 };
 
 app.get("/u/:shortURL", (req, res) => {
+  // checks url database from shortened string
+  // redirects to url list if invalid
   const longURL = urlDatabase[req.params.shortURL].longURL;
-
-  console.log("/u/", longURL);
 
   if (longURL) {
     res.redirect(longURL);
@@ -66,6 +66,8 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
+  // if user is already logged in based off session id, redirects to their url list
+  // otherwise sends them to registration page
   if (req.session.userId) {
     res.render(
       "urls_index",
@@ -77,6 +79,8 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  // if user is already logged in based off session id, redirects to their url list
+  // otherwise sends them to login page
   if (req.session.userId) {
     res.render(
       "urls_index",
@@ -103,6 +107,8 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  // Shows users' urls based off session id
+  // redirects to login if invalid session id
   if (req.session.userId) {
     res.render(
       "urls_index",
@@ -114,6 +120,8 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/", (req, res) => {
+  // Shows users' urls based off session id
+  // redirects to login if invalid session id
   if (req.session.userId) {
     res.render(
       "urls_index",
@@ -127,6 +135,9 @@ app.get("/", (req, res) => {
 ////////// POSTS ///////////
 
 app.post("/register", (req, res) => {
+  // registration route that takes in valid user info from body
+  // registers into user list
+  // failure returns template object to render error
   let error = isRegistrationValid(req.body, users);
 
   if (error) {
@@ -150,6 +161,7 @@ app.post("/register", (req, res) => {
 
 app.post("/login", (req, res) => {
   // returns userId if valid login
+  // other wise returns variables that update the page to show error
   let loginResult = isLoginValid(req.body.email, req.body.password, users);
 
   if (loginResult) {
